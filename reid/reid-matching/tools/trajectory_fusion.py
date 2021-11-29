@@ -20,6 +20,7 @@ def parse_pt(pt_file,zones):
         if tid not in mot_list:
             mot_list[tid] = dict()
         out_dict = lines[line]
+        # return zone number
         out_dict['zone'] = zones.get_zone(bbox)
         mot_list[tid][fid] = out_dict
     return mot_list
@@ -48,12 +49,15 @@ if __name__ == '__main__':
     cfg.merge_from_file(f'../../../config/{sys.argv[1]}')
     cfg.freeze()
     scene_name = ['S06']
+    # MTMC/datasets/detect_merge
     data_dir = cfg.DATA_DIR
     save_dir = './exp/viz/test/S06/trajectory/'
+    # parse cam start timestamp - type: dict
     cid_bias = parse_bias(cfg.CID_BIAS_DIR, scene_name)
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
     cam_paths = os.listdir(data_dir)
+    # filter dir containing 'c' letter
     cam_paths = list(filter(lambda x: 'c' in x, cam_paths))
     cam_paths.sort()
     zones = zone()
@@ -67,9 +71,14 @@ if __name__ == '__main__':
         new_mot_path = opj(data_dir, cam_path, '{}_mot_feat_break.pkl'.format(cam_path))
         print(new_mot_path)
         zones.set_cam(cid)
+
+        # Read data from mot_path
         mot_list = parse_pt(mot_path,zones)
+
+        # break mot into smaller mot with pre-defined criteria
         mot_list = zones.break_mot(mot_list, cid)
         # mot_list = zones.comb_mot(mot_list, cid)
+
         mot_list = zones.filter_mot(mot_list, cid) # filter by zone
         mot_list = zones.filter_bbox(mot_list, cid)  # filter bbox
         out_new_mot(mot_list, new_mot_path)
@@ -86,6 +95,7 @@ if __name__ == '__main__':
             # if tid==11 and cid==44:
             #     print(tid)
             zone_list = [tracklet[f]['zone'] for f in frame_list]
+            chosen_frame_list = [f for f in frame_list if (tracklet[f]['bbox'][3]-tracklet[f]['bbox'][1])*(tracklet[f]['bbox'][2]-tracklet[f]['bbox'][0])>2000]
             feature_list = [tracklet[f]['feat'] for f in frame_list if (tracklet[f]['bbox'][3]-tracklet[f]['bbox'][1])*(tracklet[f]['bbox'][2]-tracklet[f]['bbox'][0])>2000]
             if len(feature_list)<2:
                 feature_list = [tracklet[f]['feat'] for f in frame_list]
@@ -97,8 +107,10 @@ if __name__ == '__main__':
                 'cam': cid,
                 'tid': tid,
                 'mean_feat': mean_feat,
+                'chosen_frame_list': feature_list,
                 'zone_list':zone_list,
                 'frame_list': frame_list,
+                'chosen_frame_list': chosen_frame_list,
                 'tracklet': tracklet,
                 'io_time': io_time
             }

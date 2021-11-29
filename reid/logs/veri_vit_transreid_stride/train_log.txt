@@ -1,0 +1,158 @@
+2021-07-12 11:51:38,213 transreid INFO: Saving model in the path :../logs/veri_vit_transreid_stride
+2021-07-12 11:51:38,213 transreid INFO: Namespace(config_file='configs/aic21/vit_transMtmc_stride.yml', opts=[], local_rank=0)
+2021-07-12 11:51:38,213 transreid INFO: Loaded configuration file configs/aic21/vit_transMtmc_stride.yml
+2021-07-12 11:51:38,213 transreid INFO: 
+MODEL:
+  PRETRAIN_CHOICE: 'imagenet'
+  PRETRAIN_PATH: './saved_model/jx_vit_base_p16_224-80ecf9dd.pth'
+  METRIC_LOSS_TYPE: 'softmax' #['softmax_triplet', 'triplet', 'softmax'']
+  IF_LABELSMOOTH: 'off'
+  IF_WITH_CENTER: 'no'
+  NAME: 'TransMTMC' #'transformer', 'TransMTMC'
+  NO_MARGIN: True
+  USE_GPU: True # False True
+  DEVICE: 'cuda' #"cuda" 'cpu'
+  DEVICE_ID: ('0') #('0') ('cpu')
+  TRANSFORMER_TYPE: 'vit_base_patch16_224_TransMTMC'
+  STRIDE_SIZE: [12, 12]
+  SIE_CAMERA: False
+  SIE_VIEW: False
+  SIE_COE: 3.0
+  JPM: True
+  SHIFT_NUM: 8
+  RE_ARRANGE: True
+  TRAJECTORY: True
+  MTMC : True
+
+INPUT:
+  SIZE_TRAIN: [256, 256]
+  SIZE_TEST: [256, 256]
+  PROB: 0.5 # random horizontal flip
+  RE_PROB: 0.5 # random erasing
+  PADDING: 10
+  PIXEL_MEAN: [0.5, 0.5, 0.5]
+  PIXEL_STD: [0.5, 0.5, 0.5]
+  DEBUG_SIZE: 10 #10 -1
+
+DATASETS:
+  NAMES: ('aic21')
+  ROOT_DIR: ('./data')
+
+DATALOADER:
+  SAMPLER: 'mtmc' #['softmax_triplet', 'triplet', 'softmax', 'direction_based', 'mtmc']
+  NUM_INSTANCE: 4
+  NUM_WORKERS: 8
+
+SOLVER:
+  OPTIMIZER_NAME: 'SGD'
+  MAX_EPOCHS: 120
+  BASE_LR: 0.01
+  IMS_PER_BATCH: 2
+  WARMUP_METHOD: 'linear'
+  LARGE_FC_LR: False
+  CHECKPOINT_PERIOD: 1
+  LOG_PERIOD: 50
+  EVAL_PERIOD: 1
+  WEIGHT_DECAY:  1e-4
+  WEIGHT_DECAY_BIAS: 1e-4
+  BIAS_LR_FACTOR: 2
+
+TEST:
+  EVAL: True
+  IMS_PER_BATCH: 2
+  RE_RANKING: False
+  WEIGHT: ''
+  NECK_FEAT: 'before'
+  FEAT_NORM: 'yes'
+
+OUTPUT_DIR: '../logs/veri_vit_transreid_stride'
+
+
+
+2021-07-12 11:51:38,213 transreid INFO: Running with config:
+DATALOADER:
+  NUM_INSTANCE: 4
+  NUM_WORKERS: 8
+  SAMPLER: mtmc
+DATASETS:
+  NAMES: aic21
+  ROOT_DIR: ./data
+INPUT:
+  DEBUG_SIZE: 10
+  PADDING: 10
+  PIXEL_MEAN: [0.5, 0.5, 0.5]
+  PIXEL_STD: [0.5, 0.5, 0.5]
+  PROB: 0.5
+  RE_PROB: 0.5
+  SIZE_TEST: [256, 256]
+  SIZE_TRAIN: [256, 256]
+MODEL:
+  ATT_DROP_RATE: 0.0
+  CAMERA_BASED: False
+  COS_LAYER: False
+  DEVICE: cuda
+  DEVICE_ID: 0
+  DEVIDE_LENGTH: 4
+  DIST_TRAIN: False
+  DROP_OUT: 0.0
+  DROP_PATH: 0.1
+  ID_LOSS_TYPE: softmax
+  ID_LOSS_WEIGHT: 1.0
+  IF_LABELSMOOTH: off
+  IF_WITH_CENTER: no
+  JPM: True
+  LAST_STRIDE: 1
+  METRIC_LOSS_TYPE: softmax
+  MTMC: True
+  NAME: TransMTMC
+  NECK: bnneck
+  NO_MARGIN: True
+  PRETRAIN_CHOICE: imagenet
+  PRETRAIN_PATH: ./saved_model/jx_vit_base_p16_224-80ecf9dd.pth
+  RE_ARRANGE: True
+  SHIFT_NUM: 8
+  SHUFFLE_GROUP: 2
+  SIE_CAMERA: False
+  SIE_COE: 3.0
+  SIE_CONCAT: False
+  SIE_VIEW: False
+  STRIDE_SIZE: [12, 12]
+  TRAJECTORY: True
+  TRANSFORMER_TYPE: vit_base_patch16_224_TransMTMC
+  TRIPLET_LOSS_WEIGHT: 1.0
+  USE_GPU: True
+OUTPUT_DIR: ../logs/veri_vit_transreid_stride
+SOLVER:
+  BASE_LR: 0.01
+  BIAS_LR_FACTOR: 2
+  CENTER_LOSS_WEIGHT: 0.0005
+  CENTER_LR: 0.5
+  CHECKPOINT_PERIOD: 1
+  COSINE_MARGIN: 0.5
+  COSINE_SCALE: 30
+  EVAL_PERIOD: 1
+  GAMMA: 0.1
+  IMS_PER_BATCH: 2
+  LARGE_FC_LR: False
+  LOG_PERIOD: 50
+  MARGIN: 0.3
+  MAX_EPOCHS: 120
+  MOMENTUM: 0.9
+  OPTIMIZER_NAME: SGD
+  SEED: 1234
+  STEPS: (40, 70)
+  WARMUP_EPOCHS: 5
+  WARMUP_FACTOR: 0.01
+  WARMUP_METHOD: linear
+  WEIGHT_DECAY: 0.0001
+  WEIGHT_DECAY_BIAS: 0.0001
+TEST:
+  DIST_MAT: dist_mat.npy
+  EVAL: True
+  FEAT_NORM: yes
+  IMS_PER_BATCH: 2
+  NECK_FEAT: before
+  RE_RANKING: False
+  WEIGHT: 
+2021-07-12 11:51:46,822 transreid.train INFO: start training
+2021-07-12 11:51:53,362 transreid.train INFO: Epoch 1 done. Time per batch: 0.648[s] Speed: 1.5[samples/s]
